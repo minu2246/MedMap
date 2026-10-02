@@ -48,6 +48,8 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
 
 
 ## 2-1. Git 상태 (2026-10-02 갱신)
+- 2026-10-03 `scripts/run_web_desktop.ps1`, `run_web_mobile.ps1`가 PATH에 없는 `pnpm` 대신 `corepack pnpm`을 쓰게 고치고,
+  `docs/MOBILE_TEST.md`에 인증서 없는 안드로이드 시험 방법을 추가했다. 커밋하고 두 저장소에 push했다.
 - 2026-10-03 추가 질문(4절 16번)은 커밋하고 두 저장소에 push했다. 변경 파일: 웹 `src/App.tsx`, `src/styles.css`, `src/symptomOptions.ts`,
   새 파일 `src/followUp.test.ts` / 문서 `docs/INTAKE_EXTRACTION.md`
 - 2026-10-03 AI 규칙·기록 문서 8개: 팀 저장소에서만 빼고 개인 저장소에는 다시 올렸다(2절, 커밋·두 저장소 push).
@@ -235,11 +237,14 @@ corepack pnpm test   # vitest run
 - PC 브라우저: 실제 목소리 한국어 변환과 의료 테스트 문장 5개 인식을 확인했다. (PROJECT_STRUCTURE.md)
 - iPhone Safari: 로컬 HTTPS, 마이크 녹음, 음성 변환을 확인했다. (PROJECT_STRUCTURE.md)
 - 지원 증상 7개가 화면에서 구조화되는 것을 2026-09-30에 확인했다. (docs/INTAKE_EXTRACTION.md)
-- Android Chrome: **아직 확인하지 않았다.**
+- Android Chrome (2026-10-03, 사용자 직접 확인): HTTP + `chrome://flags` 예외 설정으로 접속·녹음·음성 변환이 됐다.
+  사용자가 고른 기능 일부를 시험했고 시험한 기능은 정상 동작했다. 모든 항목을 시험하지는 않았다(시험하지 않은 항목은 기록 없음).
 
 ## 7. 남은 작업과 주의점 (STT 재구축 트랙)
 
-- [ ] Android Chrome에서 실제 확인
+- [x] Android Chrome에서 실제 확인 (2026-10-03, 일부 기능. 위 6절)
+- [ ] **UI 정리 (다음 작업, 사용자 요청 2026-10-03)**: 화면이 복잡해서 처음 쓰는 사용자가 무엇부터 해야 할지 알기 어렵다.
+      기능은 유지하고 화면 흐름(입력 → 확인 → 저장 → 요약)과 배치를 깔끔하게 정리한다.
 - [x] 웹 자동 테스트 1차: Vitest 5.0.3을 도입하고 순수 함수 테스트 13개를 추가했다. (2026-10-01)
 - [ ] 웹 테스트 확장: `recordGroups.ts`, `recordStorage.ts`(jsdom 또는 fake-indexeddb 필요), 화면 테스트
 - [x] `apps/web/package.json`의 `latest` 버전을 지금 설치된 버전으로 고정했다. (2026-10-01)
