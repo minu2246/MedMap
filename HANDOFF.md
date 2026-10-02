@@ -48,7 +48,7 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
 
 
 ## 2-1. Git 상태 (2026-10-02 갱신)
-- 2026-10-03 추가 질문(4절 16번)은 **아직 커밋하지 않았다.** 변경 파일: 웹 `src/App.tsx`, `src/styles.css`, `src/symptomOptions.ts`,
+- 2026-10-03 추가 질문(4절 16번)은 커밋하고 두 저장소에 push했다. 변경 파일: 웹 `src/App.tsx`, `src/styles.css`, `src/symptomOptions.ts`,
   새 파일 `src/followUp.test.ts` / 문서 `docs/INTAKE_EXTRACTION.md`
 - 2026-10-03 AI 규칙·기록 문서 8개: 팀 저장소에서만 빼고 개인 저장소에는 다시 올렸다(2절, 커밋·두 저장소 push).
   변경 파일: `.gitignore`, `scripts/sync_team_repo.ps1`, 다시 추적하는 문서 8개
