@@ -58,7 +58,7 @@ foreach ($line in $messages + '@@end@@') {
 
 $archive = Join-Path $env:TEMP 'medmap-team-export.tar'
 $excludes = $personalOnly | ForEach-Object { ":(exclude)$_" }
-Invoke-MedMapGit -C $medmapRoot archive --format=tar -o $archive main -- . @excludes
+Invoke-MedMapGit -C $medmapRoot archive --format=tar "--output=$archive" main -- . @excludes
 $target = Join-Path $teamClone $teamPrefix
 if (Test-Path -LiteralPath $target) {
     Invoke-MedMapGit -C $teamClone rm -r -q --ignore-unmatch $teamPrefix
