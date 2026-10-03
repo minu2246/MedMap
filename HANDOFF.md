@@ -2,7 +2,7 @@
 
 작성일: 2026-10-01 (최종 갱신 2026-10-03)
 브랜치: `feature/stt-rebuild`
-마지막 커밋: `git log -1`로 확인한다. 2026-10-03 진료 전 요약 화면 정리(4절 21번)까지 두 저장소에 올렸다.
+마지막 커밋: `git log -1`로 확인한다. 2026-10-03 개인 저장소 README 개편(4절 24번)까지 두 저장소에 올렸다.
 다음 작업: UI를 사용자가 휴대폰으로 보고 더 고칠 점 받기(7절). 진료 중/후 기능과 팀원 통합은 보류(8절).
 
 ## 1. 프로젝트 개요
@@ -39,6 +39,8 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
 - **개인 저장소 전용 파일**(2026-10-03 사용자 요청): AI 에이전트와 일하기 위한 규칙·작업 방식·기록 문서는
   개인 저장소에만 올리고 팀 저장소에는 올리지 않는다. `AGENTS.md`, `CLAUDE.md`, `HANDOFF.md`, `PROJECT_BRIEF.txt`,
   `TEAM_PROGRESS_REVIEW_2026-09-29.md`, `FILE_MANAGEMENT.md`, `LOCAL_STORAGE_PLAN.md`, `SETUP_GIT_AUTH.ps1`.
+  `README.md`도 개인 저장소 전용이다(2026-10-03, 이모티콘·개발 기록이 있는 소개 페이지). 팀 저장소에는 예전 README를 옮긴
+  `README.team.md`가 `README.md`라는 이름으로 올라간다. 팀 README를 고칠 때는 `README.team.md`를 고친다.
   기준 목록은 `scripts/sync_team_repo.ps1`의 `$personalOnly`다. AI용 문서를 새로 만들면 거기에 추가한다.
   개인 GitHub에서 저장소를 새로 받는 에이전트도 이 규칙을 볼 수 있다. 팀 저장소의 예전 커밋(`62487bb`까지)에는
   이 파일들이 남아 있고, 이력은 고쳐 쓰지 않았다.
@@ -48,6 +50,8 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
 
 
 ## 2-1. Git 상태 (2026-10-02 갱신)
+- 2026-10-03 README 개편(4절 24번)은 커밋하고 두 저장소에 push했다. 변경 파일: `README.md`(새로 씀), `README.team.md`(예전 README 이름 변경),
+  `scripts/sync_team_repo.ps1`, `AGENTS.md`, `HANDOFF.md`
 - 2026-10-03 증상 추출 보강(4절 23번)은 커밋하고 두 저장소에 push했다. 변경 파일: API `app/services/intake_extractor.py`,
   `tests/test_intake.py`, `tests/test_intake_expanded.py`, `tests/test_intake_scenarios.py`, 새 파일 `tests/test_intake_more_symptoms.py` /
   웹 `src/symptomOptions.ts`, `src/symptomOptions.test.ts` / 문서 `docs/INTAKE_EXTRACTION.md`, `HANDOFF.md`
@@ -218,6 +222,10 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
    - 기존 테스트 3개는 `혀가 아파요` 등을 지원하지 않는 예로 쓰고 있어 `입술이 부었어요`·`겨드랑이가 아파요`·`목이 뻐근해요`로 바꿨다.
      새 테스트 `tests/test_intake_more_symptoms.py`. API 테스트 342개, 웹 테스트 48개 통과. 웹 증상 목록(`symptomOptions.ts`)도 56개로
    - `2주 전`·`엊그제`는 하루로 정해지지 않아 지금처럼 날짜로 바꾸지 않는다(정확하지 않은 날짜가 기록에 찍히는 것을 피함)
+24. 2026-10-03 개인 저장소 README 개편 (사용자 요청: 이모티콘, 가독성, 배경·목표, 일자별 개발 기록)
+   - `README.md`: 배경 → 목표(진료 전·중·후·연구 상태 표) → 현재 기능 → 구성 → 실행 → 개인정보 → 날짜별 개발 기록 → 참고 문서
+   - 개인 저장소에만 둔다. 예전 README(DDXPlus 단계 설명)는 `README.team.md`로 옮겼고, 팀 저장소에는 그 파일이 `README.md`로 올라간다
+     (`sync_team_repo.ps1`이 복사 뒤 이름을 바꿈). 새 기능을 만들면 README의 개발 기록에도 날짜별로 한 줄 추가한다
 
 ## 5. 실행 방법
 
