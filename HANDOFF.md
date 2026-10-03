@@ -50,6 +50,7 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
 
 
 ## 2-1. Git 상태 (2026-10-02 갱신)
+- 2026-10-03 `recordGroups.ts` 테스트(새 파일 `apps/web/src/recordGroups.test.ts`)는 커밋하고 두 저장소에 push했다. 웹 테스트 54개 통과.
 - 2026-10-03 증상 추출 보강 2차·확인 화면 정리(4절 25번)는 커밋하고 두 저장소에 push했다. 변경 파일: API `app/services/intake_extractor.py`,
   `tests/test_intake_more_symptoms.py` / 웹 `src/App.tsx`, `src/styles.css`, `src/symptomOptions.ts`, `src/symptomOptions.test.ts` /
   `docs/INTAKE_EXTRACTION.md`, `README.md`, `HANDOFF.md`
@@ -322,7 +323,8 @@ corepack pnpm test   # vitest run
 - [ ] **UI 정리 (사용자 요청 2026-10-03)**: 단계 표시(4절 17번) 후 여러 화면으로 나눴다(18번). 사용자가 휴대폰으로 보고 더 고칠 점을 받는다.
       기능은 유지하고 화면 흐름(입력 → 확인 → 저장 → 요약)과 배치를 깔끔하게 정리한다.
 - [x] 웹 자동 테스트 1차: Vitest 5.0.3을 도입하고 순수 함수 테스트 13개를 추가했다. (2026-10-01)
-- [ ] 웹 테스트 확장: `recordGroups.ts`, `recordStorage.ts`(jsdom 또는 fake-indexeddb 필요), 화면 테스트
+- [x] `recordGroups.ts` 테스트 6개 (2026-10-03, 가짜 localStorage로, 새 패키지 없음)
+- [ ] 웹 테스트 확장: `recordStorage.ts`(fake-indexeddb 필요, IndexedDB를 얇게 감싼 코드라 보류), 화면 테스트
 - [x] `apps/web/package.json`의 `latest` 버전을 지금 설치된 버전으로 고정했다. (2026-10-01)
       react/react-dom/@types 19.3.0, @vitejs/plugin-react 6.1.1, typescript 7.0.2, vite 8.3.1. lockfile은 specifier만 바뀌었다.
 - [x] docs/INTAKE_EXTRACTION.md의 저장 설명을 IndexedDB 저장 기준으로 고쳤다. (2026-10-01)
