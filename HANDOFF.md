@@ -1,9 +1,9 @@
 # MedMap 작업 인계 (HANDOFF)
 
-작성일: 2026-10-01 (최종 갱신 2026-10-04)
+작성일: 2026-10-01 (최종 갱신 2026-10-05)
 브랜치: `feature/stt-rebuild`
-마지막 커밋: `git log -1`로 확인한다. 2026-10-04 증상 추출 보강 3차·UI 다듬기·요약의 사라진 증상(4절 26번)까지 두 저장소에 올렸다.
-다음 작업: 혼자 할 수 있는 진료 전 작업은 대부분 끝났다. 남은 것은 사용자 결정이 필요한 일이다(아래 "결정 대기"). 사용자가 휴대폰으로 보고 고칠 점을 주면 UI를 더 다듬는다.
+마지막 커밋: `git log -1`로 확인한다. 2026-10-05 폰 안 STT 준비·안드로이드 앱(4절 27번)까지 두 저장소에 올렸다.
+다음 작업: 안드로이드 앱을 폰에 설치해 정확도·속도 측정(4절 27번, docs/ANDROID_APP.md). 사용자가 USB 디버깅을 켜고 연결하면 `scripts/install_android_app.ps1` 실행. 진료 중/후와 팀원 통합은 보류.
 
 결정 대기 (2026-10-04 갱신):
 - 진료 중/후 기능: 팀원과 방식 합의 후 시작(7절, 8절). 의사에게 넘기는 방법으로 "서버 없이 QR" 안을 사용자와 상의했다(2026-10-04):
@@ -65,6 +65,9 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
 
 
 ## 2-1. Git 상태 (2026-10-02 갱신)
+- 2026-10-05 폰 안 STT 준비·안드로이드 앱(4절 27번)은 커밋하고 두 저장소에 push했다(폰 설치·실행은 아직). 변경 파일: API `app/main.py`(CORS), `app/services/intake_extractor.py`(`쎅쎅`, 한글 숫자 체온, `N일 전 저녁부터`),
+  `tests/test_intake_more_symptoms.py`, 새 파일 `scripts/compare_whisper_cpp.py` / 웹 `package.json`, `pnpm-lock.yaml`, `src/App.tsx`, 새 파일
+  `src/phoneStt.ts`, `capacitor.config.json`, `android/` / `scripts/install_android_app.ps1`, `docs/ANDROID_APP.md`, `docs/STT_SPEC.md`, `HANDOFF.md`
 - 2026-10-04 증상 추출 보강 3차·UI 다듬기·요약의 사라진 증상(4절 26번)은 커밋하고 두 저장소에 push했다. 변경 파일: API `app/services/intake_extractor.py`,
   `tests/test_intake.py`, `tests/test_intake_expanded.py`, `tests/test_intake_scenarios.py`, `tests/test_intake_more_symptoms.py` /
   웹 `src/App.tsx`, `src/styles.css`, `src/symptomOptions.ts`, `src/symptomOptions.test.ts`, `src/visitSummary.ts`, `src/visitSummary.test.ts`,
@@ -274,6 +277,38 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
      (`구토 · 10월 1일 · 4회`). 사라졌어도 위험 증상이었으면 빨간 `위험 증상` 표시(심한 두통 포함). 복사·PDF·QR 글도 같은 순서.
      이유: 경과 자체가 진단 단서이고, 잠깐 있다 사라진 위험 증상(기절·혈변 등)을 숨기면 안 된다. 기간 글은 `visitSummary.ts`의 `episodePeriod`
    - Chrome(PC, 폭 약 650px)으로 홈·지난 기록 확인(저장·삭제 안 함, 그 브라우저에 이미 있던 기록 2개로 봄)
+27. 2026-10-05 폰 안 STT 준비 (안드로이드 중심, 사용자 결정: Mac이 없어 iOS는 나중)
+   - 계획: ① PC에서 폰용 whisper.cpp(압축 turbo)와 서버 faster-whisper 비교 → ② 안드로이드 앱으로 감싸고 녹음만 폰 STT로
+     (증상 정리는 당분간 PC 서버) → ③ 실제 폰에서 정확도·속도 측정 → ④ 증상 정리 규칙을 TypeScript로 옮겨 서버 없이
+   - ① 준비 완료: `local-cache/whisper-cpp/`(Git 제외)에 whisper.cpp Windows CPU 빌드(b5130, `bin/Release/whisper-cli.exe`)와
+     `models/ggml-large-v3-turbo-q5_0.bin`(약 550MB). 비교 스크립트 `apps/api/scripts/compare_whisper_cpp.py`
+     (`cd apps/api; .venv\Scripts\python.exe -m scripts.compare_whisper_cpp` → 기본으로 `local-cache/stt-samples/`의 녹음을 읽음).
+     두 엔진의 글자, 처리 시간, 증상 정리 결과가 같은지를 보여 준다
+   - Windows 합성 음성(TTS) 2개로 동작만 확인(정확도 판단용 아님): 글자는 거의 같음. whisper.cpp는 PC CPU 4스레드에서 7~8초 녹음에
+     약 9초 → 폰은 더 느릴 수 있어 실측 필요. 서버 모델이 `쌕쌕`을 `쎅쎅`으로 적어 규칙에 `쎅쎅` 추가(API 테스트 383개 통과)
+   - 남은 준비: 사용자 실제 녹음 3~5개를 `local-cache/stt-samples/`에 넣고 비교. 안드로이드 빌드용 **NDK와 CMake가 SDK에 없다**
+     (Android Studio → SDK Manager → SDK Tools에서 설치). 있는 것: Android Studio, SDK(build-tools 34~36, platforms 34·36), Java
+   - 사용자 실제 녹음 3개 비교(2026-10-05, 서버 쪽은 PC CPU int8로 돌림. 실제 서버는 GPU float16이라 조금 다를 수 있다):
+     폰용(whisper.cpp q5 turbo)이 증상은 더 잘 잡았다. 서버는 `쿡쿡`→`구구`, `복통`→`폭통`으로 적어 복통을 2번 놓쳤고, 폰용은 3개 모두 맞음.
+     대신 폰용은 숫자를 한글로 적는다(`삼십팔 도`, `이 일 전`, `두 정`). 둘 다 틀린 것: `타이레농`, `투정·수정`(두 정), `사매`(3회).
+     처리 시간: 폰용 PC CPU 4스레드에서 8~10초 녹음에 약 9초(서버 엔진 CPU는 3~6초)
+   - 그래서 규칙을 고침: 한글 숫자 체온(`삼십팔 점 오 도` → 38.5℃, 35~49도만), `2일 전 저녁부터`·`이틀 전 저녁부터`·`이 일 전 저녁부터`를
+     시작 시점 하나로(전에는 `저녁부터`만 남음) + 날짜 계산. API 테스트 390개 통과
+   - whisper.cpp에 예시 문장(`--prompt`)을 주면 결과가 크게 나빠졌다(`아랍 배`, 글자 깨짐). **prompt는 쓰지 않는다.** 스크립트에 옵션만 남김
+   - 판단: 폰용 압축 turbo로 정확도 손해는 없어 보인다(표본 3개라 단정은 이르다). 남은 위험은 폰에서의 속도
+   - ② 안드로이드 앱(2026-10-05, 상세: docs/ANDROID_APP.md): Capacitor 8.5.2로 웹 화면을 감쌌다(`apps/web/android/`, appId `kr.medmap.app`).
+     whisper.cpp v1.9.4를 CMake가 빌드 때 받아 JNI로 연결(`app/src/main/cpp/`, `WhisperPlugin.java`). arm64만, 항상 Release(-O3).
+     웹은 `src/phoneStt.ts`: 앱 안에서는 녹음 중 실시간 자막을 끄고, 녹음 종료 때 16kHz 음성을 `Whisper.transcribe`로 넘긴다.
+     증상 정리는 `http://localhost:8000`(adb reverse로 PC API), API에 CORS(`http://localhost`만) 추가.
+     모델은 APK에 넣지 않고 adb로 `/sdcard/Android/data/kr.medmap.app/files/`에 복사. `scripts/install_android_app.ps1`이
+     웹 빌드 → cap sync → gradle → 설치 → 모델 복사 → adb reverse를 한 번에 한다
+   - 확인한 것: `assembleDebug` 성공, APK 안에 `libmedmap_whisper.so`. 웹 테스트 55개, API 390개 통과.
+     **아직 폰에 설치·실행하지 않았다**(폰 연결 대기). 최신 ARM 명령(dotprod·fp16)은 켜지 않았다 — 느리면 폰 기종 확인 후 켠다
+   - 주의: `android/local.properties`의 `sdk.dir`은 슬래시(`C:/Users/...`)로 쓴다. 역슬래시 하나는 깨진다(Git 제외 파일)
+   - 배포 때는 USB·adb가 필요 없다(사용자와 상의, 2026-10-05): Play 스토어(또는 APK 공유)로 설치, 모델은 첫 실행 때 내려받기
+     (Play Asset Delivery나 다운로드 서버, 와이파이 안내·진행률·이어받기), 증상 정리 규칙을 TypeScript로 옮겨 PC 없이.
+     Play 등록에는 개발자 계정(1회 25달러), 앱 서명, 개인정보 처리방침, 건강 앱 정책 신고, 새 개인 계정은 출시 전 비공개 테스트(테스터·약 2주)가 필요.
+     순서: 먼저 폰 속도가 쓸 만한지 확인 → 느리면 모델·최적화부터 다시 정한다
 
 ## 5. 실행 방법
 
