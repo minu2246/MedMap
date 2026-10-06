@@ -1,9 +1,9 @@
 # MedMap 작업 인계 (HANDOFF)
 
-작성일: 2026-10-01 (최종 갱신 2026-10-05)
+작성일: 2026-10-01 (최종 갱신 2026-10-06)
 브랜치: `feature/stt-rebuild`
-마지막 커밋: `git log -1`로 확인한다. 2026-10-05 폰 안 STT 준비·안드로이드 앱(4절 27번)까지 두 저장소에 올렸다.
-다음 작업: 안드로이드 앱을 폰에 설치해 정확도·속도 측정(4절 27번, docs/ANDROID_APP.md). 사용자가 USB 디버깅을 켜고 연결하면 `scripts/install_android_app.ps1` 실행. 진료 중/후와 팀원 통합은 보류.
+마지막 커밋: `git log -1`로 확인한다. 2026-10-06 폰 STT 측정·q8_0 기본화(4절 27번)까지 두 저장소에 올렸다.
+다음 작업: 폰 STT를 더 빠르게 + 실시간 자막(사용자 요청 2026-10-06, 4절 27번, docs/ANDROID_APP.md). 진료 중/후와 팀원 통합은 보류.
 
 결정 대기 (2026-10-04 갱신):
 - 진료 중/후 기능: 팀원과 방식 합의 후 시작(7절, 8절). 의사에게 넘기는 방법으로 "서버 없이 QR" 안을 사용자와 상의했다(2026-10-04):
@@ -65,6 +65,9 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
 
 
 ## 2-1. Git 상태 (2026-10-02 갱신)
+- 2026-10-06 폰 STT 측정과 q8_0 기본화(4절 27번 ③)는 커밋하고 두 저장소에 push했다. 변경 파일: `apps/web/android/app/build.gradle`,
+  `app/src/main/cpp/whisper_jni.cpp`, `WhisperPlugin.java` / API `app/services/intake_extractor.py`(`구구`), `tests/test_intake_more_symptoms.py` /
+  `scripts/install_android_app.ps1`, `docs/ANDROID_APP.md`, `docs/STT_SPEC.md`, `README.md`, `HANDOFF.md`
 - 2026-10-05 폰 안 STT 준비·안드로이드 앱(4절 27번)은 커밋하고 두 저장소에 push했다(폰 설치·실행은 아직). 변경 파일: API `app/main.py`(CORS), `app/services/intake_extractor.py`(`쎅쎅`, 한글 숫자 체온, `N일 전 저녁부터`),
   `tests/test_intake_more_symptoms.py`, 새 파일 `scripts/compare_whisper_cpp.py` / 웹 `package.json`, `pnpm-lock.yaml`, `src/App.tsx`, 새 파일
   `src/phoneStt.ts`, `capacitor.config.json`, `android/` / `scripts/install_android_app.ps1`, `docs/ANDROID_APP.md`, `docs/STT_SPEC.md`, `HANDOFF.md`
@@ -305,6 +308,14 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
    - 확인한 것: `assembleDebug` 성공, APK 안에 `libmedmap_whisper.so`. 웹 테스트 55개, API 390개 통과.
      **아직 폰에 설치·실행하지 않았다**(폰 연결 대기). 최신 ARM 명령(dotprod·fp16)은 켜지 않았다 — 느리면 폰 기종 확인 후 켠다
    - 주의: `android/local.properties`의 `sdk.dir`은 슬래시(`C:/Users/...`)로 쓴다. 역슬래시 하나는 깨진다(Git 제외 파일)
+   - ③ 실제 폰 측정(2026-10-06, 갤럭시 노트20 SM-N981N · 스냅드래곤 865 · RAM 8GB · 안드로이드 13, 상세: docs/ANDROID_APP.md "속도"):
+     처음 q5_0은 녹음 4~7초에 38~62초 → 원인은 encoder(30초 분량 고정 계산 + q5_0이 ARM 고속 경로를 못 탐).
+     JNI에서 `audio_ctx` = 녹음+5초(최소 15초, 더 줄이면 PC 비교에서 단어가 바뀜), ARMv8.2 dotprod·fp16 빌드,
+     원본 모델을 받아 직접 변환(MSVC로 `whisper-quantize` 빌드). 결과: q4_0 5.1~5.9초, **q8_0 5.7~6.2초(기본)**.
+     q4_0은 PC 비교에서 `복통`→`폭통`, q8_0은 증상 단어 모두 맞음. 앱은 q8_0 → q4_0 → q5_0 순서로 있는 모델을 쓴다(폰에 셋 다 있음).
+     whisper.cpp 타이밍은 `adb logcat -s whisper:I`. 규칙에 `구구`·`꾹꾹`(쿡쿡 오인) 추가, API 테스트 391개 통과
+   - 고친 것: 설치 스크립트가 모델 복사 전에 조용히 멈췄다(Windows PowerShell에서 `2>$null` + `Stop`이 stat 실패를 예외로 만듦)
+   - 다음(사용자 요청 2026-10-06): **더 빠르게**와 **실시간 자막**. 녹음 중 자막은 지금 앱에서 꺼 둔 상태(폰에서 반복 변환이 느려서)
    - 배포 때는 USB·adb가 필요 없다(사용자와 상의, 2026-10-05): Play 스토어(또는 APK 공유)로 설치, 모델은 첫 실행 때 내려받기
      (Play Asset Delivery나 다운로드 서버, 와이파이 안내·진행률·이어받기), 증상 정리 규칙을 TypeScript로 옮겨 PC 없이.
      Play 등록에는 개발자 계정(1회 25달러), 앱 서명, 개인정보 처리방침, 건강 앱 정책 신고, 새 개인 계정은 출시 전 비공개 테스트(테스터·약 2주)가 필요.
