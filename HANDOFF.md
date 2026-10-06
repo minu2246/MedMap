@@ -2,8 +2,8 @@
 
 작성일: 2026-10-01 (최종 갱신 2026-10-06)
 브랜치: `feature/stt-rebuild`
-마지막 커밋: `git log -1`로 확인한다. 2026-10-06 GPU 시험 기록·속도 시도 정리·진행 막대까지 두 저장소에 올렸다.
-다음 작업: 폰 STT 속도는 노트20에서 약 5~6초가 바닥으로 정리됨(4절 27번). 자막·진행 막대를 실제 폰으로 확인, 약 이름 오인(`테렌`·`페네실린`) 규칙. 진료 중/후와 팀원 통합은 보류.
+마지막 커밋: `git log -1`로 확인한다. 2026-10-06 하이브리드 STT(기기 내장 인식 + turbo 검증)까지 두 저장소에 올렸다.
+다음 작업: 하이브리드 STT(기기 내장 인식 + turbo 검증, 4절 27번 ⑤)를 실제 마이크로 확인, 정답 기준 평가용 녹음 받기. 진료 중/후와 팀원 통합은 보류.
 
 결정 대기 (2026-10-04 갱신):
 - 진료 중/후 기능: 팀원과 방식 합의 후 시작(7절, 8절). 의사에게 넘기는 방법으로 "서버 없이 QR" 안을 사용자와 상의했다(2026-10-04):
@@ -65,6 +65,9 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
 
 
 ## 2-1. Git 상태 (2026-10-02 갱신)
+- 2026-10-06 하이브리드 STT(4절 27번 ⑤)는 커밋하고 두 저장소에 push했다. 변경 파일: `apps/web/android/.../DeviceSttPlugin.java`(새),
+  `MainActivity.java`, `AndroidManifest.xml` / 웹 `src/App.tsx`, `src/phoneStt.ts`, 새 파일 `src/transcriptCheck.ts`, `src/transcriptCheck.test.ts` /
+  새 파일 `apps/api/scripts/bench_device_stt.py`, `scripts/bench_phone_stt.py` / `docs/ANDROID_APP.md`, `HANDOFF.md`
 - 2026-10-06 GPU 시험 기록·속도 시도 정리·진행 막대(4절 27번 ④)는 커밋하고 두 저장소에 push했다. 변경 파일: 웹 `src/App.tsx`, `src/styles.css` /
   `docs/ANDROID_APP.md`, `HANDOFF.md`
 - 2026-10-06 빠른 코어 고정·자막·자동 측정(4절 27번 ④)은 커밋하고 두 저장소에 push했다. 변경 파일: `apps/web/android/app/src/main/cpp/whisper_jni.cpp`,
@@ -338,6 +341,13 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
      - 속도 추가 시도(2026-10-06, 사용자 요청 "진짜 구현"): medium·small 모델(증상 4/8·2/8로 탈락), greedy(7/8, 긴 녹음 반복으로 탈락),
        말이 멈추면 미리 turbo 변환(구현·측정 후 되돌림: 이득 1~2초, encoder 중 취소 불가로 다시 말하면 최대 5초 손해, 자막과 동시면 6.3→9.4초),
        NPU(Qualcomm 공식은 SD888 이상). 결론: 노트20에서 약 5~6초가 바닥. 남긴 것은 녹음 종료 후 진행 막대(`.stt-progress`)와 안내 문구
+   - ⑤ 하이브리드(2026-10-06, 사용자 결정, 상세: docs/ANDROID_APP.md "기기 내장 인식 + turbo 검증"):
+     외부 검토 요청에 따라 한국어 스트리밍 Zipformer(sherpa-onnx)를 PC에서 비교 → 증상 핵심어 오인으로 탈락.
+     Android 기기 내 인식(`createOnDeviceSpeechRecognizer`, 노트20에 ko-KR 설치됨, 비행기 모드 확인)이 첫 자막 0.6~2.6초,
+     종료 후 확정 0.02~0.10초. turbo 대비 8개 중 2개에서 복통을 놓쳐 **turbo 검증 유지**: 기기 결과를 바로 보여 주고,
+     정리하기를 누를 때 turbo 결과와 증상·약·알레르기가 다르면 두 문장을 보여 주고 고르게 함.
+     새 파일 `DeviceSttPlugin.java`, `src/transcriptCheck.ts`(+테스트), `scripts/bench_device_stt.py`. 웹 테스트 63개 통과.
+     **실제 마이크 시험과 사람이 확인한 정답 기준 평가는 아직**(사용자가 녹음 가능할 때 짧은 말·10~20초·30~60초 녹음 필요)
    - 배포 때는 USB·adb가 필요 없다(사용자와 상의, 2026-10-05): Play 스토어(또는 APK 공유)로 설치, 모델은 첫 실행 때 내려받기
      (Play Asset Delivery나 다운로드 서버, 와이파이 안내·진행률·이어받기), 증상 정리 규칙을 TypeScript로 옮겨 PC 없이.
      Play 등록에는 개발자 계정(1회 25달러), 앱 서명, 개인정보 처리방침, 건강 앱 정책 신고, 새 개인 계정은 출시 전 비공개 테스트(테스터·약 2주)가 필요.
@@ -541,6 +551,15 @@ docs/PRIVACY.md 원문 기준:
 - 실제 배포 전에 보관 기간, 접근 권한, 삭제 방식과 사용자 동의 문구를 별도로 검토한다.
 
 ## 11. 참고 문서
+
+- 2026-10-06 Codex 자문(사용자가 Claude에 전달할 제안 요청): 현재 코드는 단일 worker와 자막 완료 대기로 자막/최종 추론을 순차 실행한다.
+  이전 동시 실행 설명은 철회한다. 5~6초는 현 구성의 관측 결과이며 모든 온디바이스 STT의 한계가 아니다.
+  미시험 후보: sherpa-onnx 한국어 streaming Zipformer `sherpa-onnx-streaming-zipformer-korean-2024-06-16`(공식 int8 제공).
+  메인 앱 교체 전에 같은 합성 테스트 음성으로 의료 핵심 정보 정확도와 노트20 실시간 입력 지연을 비교할 것.
+  turbo와 증상 정리 결과의 일치율(기존 small 2/8 등)을 사람 정답 대비 STT 정확도와 혼동하지 않는다.
+  새 엔진이 정확도 기준을 통과하면 최종 결과에도 사용, 자막만 통과하면 자막 대체만 검토(이 경우 turbo 최종 대기 시간은 남음).
+  참고: https://k2-fsa.github.io/sherpa/onnx/pretrained_models/online-transducer/zipformer-transducer-models.html#sherpa-onnx-streaming-zipformer-korean-2024-06-16-korean
+  이번 작업은 조사·제안과 이 기록 추가만 수행. 코드 변경·모델 설치·실기기 벤치마크·테스트·커밋·push 없음. 주 개발은 Claude에서 진행 중.
 
 README.md · PROJECT_STRUCTURE.md · docs/STT_SPEC.md · docs/INTAKE_EXTRACTION.md · docs/PRIVACY.md ·
 docs/MOBILE_TEST.md · docs/TEMPORARY_REMOTE_TEST.md · LOCAL_STORAGE_PLAN.md · FILE_MANAGEMENT.md ·
