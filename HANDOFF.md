@@ -2,8 +2,8 @@
 
 작성일: 2026-10-01 (최종 갱신 2026-10-06)
 브랜치: `feature/stt-rebuild`
-마지막 커밋: `git log -1`로 확인한다. 2026-10-06 하이브리드 STT(기기 내장 인식 + turbo 검증)까지 두 저장소에 올렸다.
-다음 작업: 하이브리드 STT(기기 내장 인식 + turbo 검증, 4절 27번 ⑤)를 실제 마이크로 확인, 정답 기준 평가용 녹음 받기. 진료 중/후와 팀원 통합은 보류.
+마지막 커밋: `git log -1`로 확인한다. 2026-10-06 체온 발열·모르는 약 후보 규칙까지 두 저장소에 올렸다.
+다음 작업: 어려운 조건 시험 결과 분석(4절 27번 ⑥, local-cache/stt-research), 하이브리드 STT 실제 마이크 확인, 정답 기준 평가용 녹음 받기. 진료 중/후와 팀원 통합은 보류.
 
 결정 대기 (2026-10-06 갱신):
 - 진료 중/후 기능: 팀원과 방식 합의 후 시작(7절, 8절). 의사에게 넘기는 방법으로 "서버 없이 QR" 안을 사용자와 상의했다(2026-10-04):
@@ -70,6 +70,8 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
 
 
 ## 2-1. Git 상태 (2026-10-02 갱신)
+- 2026-10-06 체온 발열·모르는 약 후보 규칙(4절 27번 ⑥)은 커밋하고 두 저장소에 push했다. 변경 파일: API
+  `app/services/intake_extractor.py`, `tests/test_intake_more_symptoms.py` / `HANDOFF.md`
 - 2026-10-06 하이브리드 STT(4절 27번 ⑤)는 커밋하고 두 저장소에 push했다. 변경 파일: `apps/web/android/.../DeviceSttPlugin.java`(새),
   `MainActivity.java`, `AndroidManifest.xml` / 웹 `src/App.tsx`, `src/phoneStt.ts`, 새 파일 `src/transcriptCheck.ts`, `src/transcriptCheck.test.ts` /
   새 파일 `apps/api/scripts/bench_device_stt.py`, `scripts/bench_phone_stt.py` / `docs/ANDROID_APP.md`, `HANDOFF.md`
@@ -353,6 +355,16 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
      정리하기를 누를 때 turbo 결과와 증상·약·알레르기가 다르면 두 문장을 보여 주고 고르게 함.
      새 파일 `DeviceSttPlugin.java`, `src/transcriptCheck.ts`(+테스트), `scripts/bench_device_stt.py`. 웹 테스트 63개 통과.
      **실제 마이크 시험과 사람이 확인한 정답 기준 평가는 아직**(사용자가 녹음 가능할 때 짧은 말·10~20초·30~60초 녹음 필요)
+   - ⑥ 사용자 테스트 전 연구(2026-10-06, 진행 중):
+     - 규칙 보완(커밋함): `체온이 38.5도까지`처럼 체온만 말해도 37.5도 이상이면 발열(°표기 포함, 정상 체온은 기록 안 함).
+       모르는 약 이름 + 알약 용량(`테렌을 500mg`, `타이륜을 두정`)은 들린 그대로 약 후보로 남김(비슷한 약으로 바꾸지 않음,
+       `어제/아파서 두 알`·`물 500ml` 제외). API 테스트 401개 통과
+     - 어려운 조건 시험(커밋 안 함, `local-cache/stt-research/`, Git 제외): `make_variants.py`로 녹음 27개 생성
+       (긴 연속 발화 43~44초 2개, 끊어 말하기·느리게 0.85배·빠르게 1.2배·소음 15/5dB 각 5개).
+       `run_phone.py`가 폰에서 기기 인식(live)과 turbo로 돌려 `results.jsonl`에 저장(메모리·배터리 온도 포함),
+       `analyze.py`가 임시 기준(깨끗한 녹음의 turbo 결과, 사람 정답 아님)과 비교. **분석은 아직 안 했다**
+       (`cd appspi; .venv\Scripts\python.exe ..\..\local-cache\stt-researchnalyze.py`)
+     - 폰은 개발자 옵션 "USB 연결 시 화면 꺼지지 않음"을 켜 둔 상태(사용자 요청, 연구 계속용)
    - 배포 때는 USB·adb가 필요 없다(사용자와 상의, 2026-10-05): Play 스토어(또는 APK 공유)로 설치, 모델은 첫 실행 때 내려받기
      (Play Asset Delivery나 다운로드 서버, 와이파이 안내·진행률·이어받기), 증상 정리 규칙을 TypeScript로 옮겨 PC 없이.
      Play 등록에는 개발자 계정(1회 25달러), 앱 서명, 개인정보 처리방침, 건강 앱 정책 신고, 새 개인 계정은 출시 전 비공개 테스트(테스터·약 2주)가 필요.
