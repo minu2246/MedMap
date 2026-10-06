@@ -2,7 +2,7 @@
 
 작성일: 2026-10-01 (최종 갱신 2026-10-06)
 브랜치: `feature/stt-rebuild`
-마지막 커밋: `git log -1`로 확인한다. 2026-10-06 폰 STT 측정·q8_0 기본화(4절 27번)까지 두 저장소에 올렸다.
+마지막 커밋: `git log -1`로 확인한다. 2026-10-06 빠른 코어 고정·자막·자동 측정(4절 27번 ④)까지 두 저장소에 올렸다.
 다음 작업: 폰 STT를 더 빠르게 + 실시간 자막(사용자 요청 2026-10-06, 4절 27번, docs/ANDROID_APP.md). 진료 중/후와 팀원 통합은 보류.
 
 결정 대기 (2026-10-04 갱신):
@@ -65,6 +65,9 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
 
 
 ## 2-1. Git 상태 (2026-10-02 갱신)
+- 2026-10-06 빠른 코어 고정·자막·자동 측정(4절 27번 ④)은 커밋하고 두 저장소에 push했다. 변경 파일: `apps/web/android/app/src/main/cpp/whisper_jni.cpp`,
+  `WhisperPlugin.java` / 웹 `src/App.tsx`, `src/phoneStt.ts`, 새 파일 `src/speechAudio.ts`, `src/speechAudio.test.ts` /
+  새 파일 `apps/api/scripts/bench_phone_stt.py` / `scripts/install_android_app.ps1`, `docs/ANDROID_APP.md`, `HANDOFF.md`
 - 2026-10-06 폰 STT 측정과 q8_0 기본화(4절 27번 ③)는 커밋하고 두 저장소에 push했다. 변경 파일: `apps/web/android/app/build.gradle`,
   `app/src/main/cpp/whisper_jni.cpp`, `WhisperPlugin.java` / API `app/services/intake_extractor.py`(`구구`), `tests/test_intake_more_symptoms.py` /
   `scripts/install_android_app.ps1`, `docs/ANDROID_APP.md`, `docs/STT_SPEC.md`, `README.md`, `HANDOFF.md`
@@ -316,6 +319,17 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
      whisper.cpp 타이밍은 `adb logcat -s whisper:I`. 규칙에 `구구`·`꾹꾹`(쿡쿡 오인) 추가, API 테스트 391개 통과
    - 고친 것: 설치 스크립트가 모델 복사 전에 조용히 멈췄다(Windows PowerShell에서 `2>$null` + `Stop`이 stat 실패를 예외로 만듦)
    - 다음(사용자 요청 2026-10-06): **더 빠르게**와 **실시간 자막**. 녹음 중 자막은 지금 앱에서 꺼 둔 상태(폰에서 반복 변환이 느려서)
+   - ④ 빠른 코어 고정 + 자막(2026-10-06, 상세: docs/ANDROID_APP.md):
+     - JNI가 `/proc/cpuinfo` CPU part로 느린 코어(A55·Kryo Silver 등)를 빼고 빠른 코어 4개에 고정(앱은 cpufreq 파일을 못 읽음).
+       PC에서 명령줄 whisper.cpp(NDK 빌드, `local-cache/whisper-cpp/src-v1.9.4/build-android/`)로 재 보니 고정 안 하면 10초 이상도 나옴
+     - 자동 측정 도구 `apps/api/scripts/bench_phone_stt.py`: USB로 디버그 앱 웹 화면에 접속해 PC의 WAV로 `Whisper.transcribe`·`preview` 호출.
+       **사용자가 폰을 누르지 않아도** 측정 가능(폰은 잠금 해제·USB 연결). 사용자 녹음은 `local-cache/stt-samples/`
+     - 구절로 끊어 turbo로 미리 변환하는 방법은 시험 후 버림(짧은 구절에서 `복통`→`폭통`, 구절마다 약 5초라 짧은 녹음은 이득 없음)
+     - 자막(A안, 사용자 선택): 녹음 중 1.5초마다 base 모델(`ggml-base-q8_0.bin`, 80MB, greedy, 재시도 없음, 글자 수 상한)로 대략 변환,
+       화면에서는 반복 구절을 합침(`tidyCaption`). 최종 결과는 녹음 앞뒤 조용한 부분을 자르고(`trimSilence`) turbo로 전체 변환.
+       자막 0.1~0.9초, 녹음 종료 후 최종 6.3~6.7초(녹음 8~10초), 최종 결과는 전과 같음. 웹 `src/speechAudio.ts`(+테스트)
+     - **실제 마이크로 자막이 뜨는 것은 아직 사용자가 확인하지 않았다**(자동 측정은 녹음 파일로 흉내 낸 것)
+     - 남은 속도 후보: 폰 GPU(Vulkan). 녹음 종료 후 약 6초 중 encoder가 약 5초
    - 배포 때는 USB·adb가 필요 없다(사용자와 상의, 2026-10-05): Play 스토어(또는 APK 공유)로 설치, 모델은 첫 실행 때 내려받기
      (Play Asset Delivery나 다운로드 서버, 와이파이 안내·진행률·이어받기), 증상 정리 규칙을 TypeScript로 옮겨 PC 없이.
      Play 등록에는 개발자 계정(1회 25달러), 앱 서명, 개인정보 처리방침, 건강 앱 정책 신고, 새 개인 계정은 출시 전 비공개 테스트(테스터·약 2주)가 필요.
