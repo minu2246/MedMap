@@ -564,6 +564,10 @@ corepack pnpm test   # vitest run
 - [x] 기록 삭제 메시지를 `기록을 삭제했습니다`로 고치고(전에는 `선택한 테스트 기록을…`), 가져오기를 하면 지운다. 삭제하면 백업 메시지를 지운다 (2026-10-03, Chrome 확인)
 - [ ] 증상 추출 남은 한계 (2026-10-03 갱신)
       - 규칙 기반이라 65개 목록에 없는 증상은 확인 요청으로만 보여준다(겨드랑이·엉덩이 통증, 옆구리 결림, 잇몸 출혈, 멍 등).
+      - **증상 종류 추가는 나중 과제(사용자 합의, 2026-10-07)**: 먼저 정답 녹음으로 기존 65종 정확도를 올린다. 늘리면 잘못 잡을 위험,
+        TypeScript 이식 양, 팀원 DDXPlus 연결표 작업이 함께 커진다. 예외: 실제 녹음·시연 시나리오에서 자주 놓치는 증상은 그때 추가
+        (후보는 docs/RECORDING_BACKLOG.md 3절). 순서: 정답 녹음 늘리기 → 기존 정확도 보완 → 자주 놓친 증상만 추가 →
+        팀원 통합 방식에 맞춰 목록 정리 → 폰 단독용 TypeScript 이식
       - (2026-10-03 해결) 띄어쓰기 없는 문장(`가슴이답답하고아파요`). 단 정해 둔 몸 부위 단어에만 공백을 넣는다.
       - 과거력은 정해진 질환 이름이나 `OO 진단을 받았어요` 형태만 인식한다.
       - (2026-10-02 해결) 주어를 이어받은 증상도 앞 절의 시작 시점을 이어받는다.
@@ -674,7 +678,11 @@ docs/PRIVACY.md 원문 기준:
   참고: https://k2-fsa.github.io/sherpa/onnx/pretrained_models/online-transducer/zipformer-transducer-models.html#sherpa-onnx-streaming-zipformer-korean-2024-06-16-korean
   이번 작업은 조사·제안과 이 기록 추가만 수행. 코드 변경·모델 설치·실기기 벤치마크·테스트·커밋·push 없음. 주 개발은 Claude에서 진행 중.
 
-README.md · PROJECT_STRUCTURE.md · docs/STT_SPEC.md · docs/INTAKE_EXTRACTION.md · docs/PRIVACY.md ·
+- **정답 녹음 문구 재료: docs/RECORDING_BACKLOG.md** (2026-10-07 사용자 요청). 사용자는 실제 환자가 아니라 증상·연구용 표현을 고르기 어렵다.
+  시험에서 드러난 오인·규칙 약점·아직 녹음 안 한 증상을 여기에 쌓고, 사용자가 "녹음 문구 달라"고 하면 여기서 골라 문구를 만든다.
+  시험이 끝날 때마다 이 문서(상태, 녹음 기록)를 갱신한다.
+
+README.md · PROJECT_STRUCTURE.md · docs/STT_SPEC.md · docs/INTAKE_EXTRACTION.md · docs/PRIVACY.md · docs/RECORDING_BACKLOG.md ·
 docs/MOBILE_TEST.md · docs/TEMPORARY_REMOTE_TEST.md · LOCAL_STORAGE_PLAN.md · FILE_MANAGEMENT.md ·
 RESULTS.md · 04_partial_observation_design.md · TEAM_PROGRESS_REVIEW_2026-09-29.md
 
