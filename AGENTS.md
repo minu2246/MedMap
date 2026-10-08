@@ -34,7 +34,7 @@
   개인 저장소에는 올리고 **팀 저장소에는 올리지 않는다**.
   `AGENTS.md`, `CLAUDE.md`, `HANDOFF.md`, `PROJECT_BRIEF.txt`, `TEAM_PROGRESS_REVIEW_2026-09-29.md`,
   `FILE_MANAGEMENT.md`, `LOCAL_STORAGE_PLAN.md`, `SETUP_GIT_AUTH.ps1`.
-- `README.md`는 개인 저장소 첫 화면용이다(2026-10-03 사용자 요청). 팀 저장소에는 `README.team.md`가 `README.md`로 바뀌어 올라간다.
+- `README.md`는 개인 저장소와 팀 저장소에 똑같이 올라간다(2026-10-09 사용자 요청). `README.team.md`(DDXPlus 단계 설명)도 그 이름 그대로 올라간다.
   이 목록은 `scripts/sync_team_repo.ps1`의 `$personalOnly`가 기준이다. AI용 문서를 새로 만들면 그 목록에도 추가한다.
 
 ## 팀원 코드 통합

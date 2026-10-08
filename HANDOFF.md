@@ -65,8 +65,8 @@ MedMap은 환자가 말한 증상과 시간에 따른 변화를 연결하고, �
 - **개인 저장소 전용 파일**(2026-10-03 사용자 요청): AI 에이전트와 일하기 위한 규칙·작업 방식·기록 문서는
   개인 저장소에만 올리고 팀 저장소에는 올리지 않는다. `AGENTS.md`, `CLAUDE.md`, `HANDOFF.md`, `PROJECT_BRIEF.txt`,
   `TEAM_PROGRESS_REVIEW_2026-09-29.md`, `FILE_MANAGEMENT.md`, `LOCAL_STORAGE_PLAN.md`, `SETUP_GIT_AUTH.ps1`.
-  `README.md`도 개인 저장소 전용이다(2026-10-03, 이모티콘·개발 기록이 있는 소개 페이지). 팀 저장소에는 예전 README를 옮긴
-  `README.team.md`가 `README.md`라는 이름으로 올라간다. 팀 README를 고칠 때는 `README.team.md`를 고친다.
+  `README.md`는 2026-10-09부터 팀 저장소에도 똑같이 올라간다(사용자 요청. 전에는 `README.team.md`를 팀 README로 바꿔 올렸다).
+  `README.team.md`(DDXPlus 단계 설명)는 README에서 링크하므로 그 이름 그대로 함께 올라간다.
   기준 목록은 `scripts/sync_team_repo.ps1`의 `$personalOnly`다. AI용 문서를 새로 만들면 거기에 추가한다.
   개인 GitHub에서 저장소를 새로 받는 에이전트도 이 규칙을 볼 수 있다. 팀 저장소의 예전 커밋(`62487bb`까지)에는
   이 파일들이 남아 있고, 이력은 고쳐 쓰지 않았다.
