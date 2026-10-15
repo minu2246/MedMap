@@ -16,7 +16,8 @@
 - 기존 코드 스타일과 구조를 따르고, 새 파일이나 라이브러리를 만들기 전에 기존 구현을 확인한다.
 
 ## 검증
-- API: `cd apps/api; .\.venv\Scripts\python.exe -m pytest -q -p no:cacheprovider`
+- API(PC 음성 변환): `cd apps/api; .\.venv\Scripts\python.exe -m pytest -q -p no:cacheprovider`.
+  증상 정리 규칙은 2026-10-15부터 `apps/web/src/intake/extractor.ts`(테스트는 웹 쪽 `intake.test.ts`, 정답 `golden.json`)
 - 웹: `cd apps/web; corepack pnpm build` (이 PC에는 pnpm이 PATH에 없다)
 - 수정한 범위에 맞는 테스트부터 실행한다. 실행하지 않은 테스트는 통과했다고 쓰지 않는다.
 
