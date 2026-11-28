@@ -43,3 +43,17 @@ coverage/
 
 # The span model is built by apps/web/train/export_onnx.py from local-cache (about 15MB per retrain)
 /apps/web/public/models/spans.onnx
+
+# AI 작업 규칙·인수인계·로컬 관리 문서: PC에만 두고 GitHub에 올리지 않음 (2026-11-28 사용자 결정)
+/AGENTS.md
+/CLAUDE.md
+/HANDOFF.md
+/PROJECT_BRIEF.txt
+/TEAM_PROGRESS_REVIEW_2026-09-29.md
+/FILE_MANAGEMENT.md
+/LOCAL_STORAGE_PLAN.md
+/SETUP_GIT_AUTH.ps1
+/EXTERNAL_RESOURCES.json
+/AI_RESEARCH_DIALOGUE.md
+/MEDMAP_RESEARCH_CROSS_REVIEW_*.md
+/MEDMAP_TEAM_RESEARCH_PROPOSAL_*.md
